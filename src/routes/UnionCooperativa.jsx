@@ -10,7 +10,7 @@ import Select from 'react-select'
 
 
 
-function Principal() {
+function UnionCooperativa() {
     const [cargando, setCargando] = useState(false)
 
     const [mensaje, setMensaje] = useState('')
@@ -20,8 +20,6 @@ function Principal() {
         tipovehiculo: "",
         tipotransporte: "",
         disco: ""
-
-
 
     };
     const [formData, setFormData] = useState(valoresInicialesFormData);
@@ -49,10 +47,7 @@ function Principal() {
             ...prevFormData,
             monto: nuevoMonto,
 
-
         }));
-
-
 
     }
 
@@ -86,7 +81,7 @@ function Principal() {
     }
     const ObtenerTransportes = async () => {
         setCargando(true)
-        const resp = await Get('API/getTransportes.php')
+        const resp = await Get('API/getTransportesUnionCooperativa.php')
         setCargando(false)
 
         if (!resp.exito) {
@@ -122,7 +117,7 @@ function Principal() {
         setCargando(true);
 
         // Realizar la solicitud POST utilizando axios
-        const response = await Post('API/postRecaudacion.php', formData);
+        const response = await Post('API/postRecaudacionUnionCooperativa.php', formData);
 
 
         setCargando(false);
@@ -160,13 +155,12 @@ function Principal() {
             return
         }
 
-
-
         const options = resp.datos.map(item => ({
             value: item.id, // Valor que se enviará al seleccionar la opción
             label: item.nombre, // Etiqueta visible en el selector
             precio: item.precio
         }));
+
         setCooperativas(options)
 
         setFormData(prevFormData => ({
@@ -185,7 +179,7 @@ function Principal() {
         <Cargando show={cargando} />
         <Mensaje tipo="informacion" mensaje={mensaje} show={mostrarMensaje} setShow={setMostrarMensaje} />
 
-        <h5><strong>Registro de garita - Terminal Terrestre de Portoviejo</strong></h5>
+        <h5><strong>Union cooperativa</strong></h5>
         <h6>Total recaudado: {recaudaciones}</h6>
 
         <Row>
@@ -337,4 +331,4 @@ function Principal() {
 
     </>)
 }
-export default Principal
+export default UnionCooperativa

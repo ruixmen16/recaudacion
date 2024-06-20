@@ -12,6 +12,7 @@ import Layout from './layout.jsx';
 
 import AgregarCooperativa from './routes/AgregarCooperativa.jsx';
 import ActualizarCooperativa from './routes/ActualizarCooperativa.jsx';
+import UnionCooperativa from './routes/UnionCooperativa.jsx';
 
 
 import {
@@ -61,7 +62,13 @@ const router = createBrowserRouter([
     element: <Layout> <ActualizarCooperativa /></Layout>,
     errorElement: <ErrorPage />,
 
+  }, {
+    path: "/unioncooperativa",
+    element: <Layout> <UnionCooperativa /></Layout>,
+    errorElement: <ErrorPage />,
+
   }
+  //
 ])
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

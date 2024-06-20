@@ -58,7 +58,7 @@ function Usuario() {
         <Cargando show={cargando} />
         <Mensaje tipo="informacion" mensaje={mensaje} show={mostrarMensaje} setShow={setMostrarMensaje} />
 
-        <h5><strong>Configurables</strong></h5>
+        <h5><strong>Crer usuario</strong></h5>
         <Row>
 
 

@@ -12,8 +12,13 @@ const Layout = ({ children }) => {
             hijo: []
         },
         {
-            nombre: 'Configurables',
-            link: 'configurables',
+            nombre: 'Union cooperativa',
+            link: 'unioncooperativa',
+            hijo: []
+        },
+        {
+            nombre: 'Usuario',
+            link: 'usuario',
             hijo: []
         },
         {
