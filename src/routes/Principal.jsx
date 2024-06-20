@@ -29,10 +29,14 @@ function Principal() {
 
     const [valorCooperativas, setValorCooperativas] = useState({});
 
+    const [recaudaciones, setRecaudaciones] = useState(0);
+
+
     useEffect(() => {
 
         ObtenerTransportes()
         ObtenerCooperativas()
+        ObtenerRecaudacionesByIdUsuario()
     }, [])
 
     const handleSelectCooperativa = (evento) => {
@@ -60,6 +64,33 @@ function Principal() {
         }));
 
         setCooperativas(options)
+
+
+    }
+    const ObtenerRecaudacionesByIdUsuario = async () => {
+
+        const DatosPersona = localStorage.getItem("DatosPersona")
+        const datos = JSON.parse(DatosPersona)
+
+
+        // datos.id
+        let parametros = {
+            id: datos.id,
+            fecha: ""
+
+        }
+        setCargando(true)
+        const resp = await Get('API/getRecaudacionesByIdUsuario.php', parametros)
+        setCargando(false)
+
+        if (!resp.exito) {
+            setMensaje(resp.mensaje)
+            setMostrarMensaje(true)
+            return
+        }
+
+
+        setRecaudaciones(resp.datos)
 
 
     }
@@ -115,6 +146,7 @@ function Principal() {
             tipovehiculo: "",
             disco: ""
         });
+        ObtenerRecaudacionesByIdUsuario()
     }
 
 
@@ -133,8 +165,9 @@ function Principal() {
         <Mensaje tipo="informacion" mensaje={mensaje} show={mostrarMensaje} setShow={setMostrarMensaje} />
 
         <h5><strong>Registro de garita - Terminal Terrestre de Portoviejo</strong></h5>
-        <Row>
+        <h6>Total recaudado: {recaudaciones}</h6>
 
+        <Row>
 
             <Col sm={6}>
                 <Form onSubmit={GuardarConfigurables}>
@@ -237,51 +270,55 @@ function Principal() {
                 </Form>
             </Col>
             <Col sm={6}>
-                <ul className='movies' >
-                    {
-                        transportes.map((item, index) => (
+                {
+                    transportes.length &&
+                    <ul className='movies' >
+                        {
+                            transportes.map((item, index) => (
 
-                            <div key={index} className='movie-poster' >
+                                <div key={index} className='movie-poster' >
 
 
-                                <div style={{ position: 'relative', maxHeight: 200, cursor: 'pointer' }}>
-                                    <div
-                                        onClick={() => handleImagenTipoTransporte(item)}
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            maxHeight: 150
-                                        }}>
-                                        <Image
-                                            fluid
+                                    <div style={{ position: 'relative', maxHeight: 200, cursor: 'pointer' }}>
+                                        <div
+                                            onClick={() => handleImagenTipoTransporte(item)}
                                             style={{
-                                                width: '100%',
-                                                objectFit: 'contain'
-                                            }}
-                                            rounded
-                                            src={URL_DOMINIO + item.rutaimagen}
-                                        />
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                maxHeight: 150
+                                            }}>
+                                            <Image
+                                                fluid
+                                                style={{
+                                                    width: '100%',
+                                                    objectFit: 'contain'
+                                                }}
+                                                rounded
+                                                src={URL_DOMINIO + item.rutaimagen}
+                                            />
+                                        </div>
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            right: 0,
+                                            marginTop: 10,
+                                            backgroundColor: 'yellow',
+                                            color: 'black',
+                                            padding: '5px',
+                                            borderRadius: '5px',
+                                            fontWeight: 'bold'
+                                        }}>
+                                            $ {(item.precio).toFixed(2)}
+                                        </div>
+                                        <span><strong>{item.nombre}</strong></span>
                                     </div>
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        right: 0,
-                                        marginTop: 10,
-                                        backgroundColor: 'yellow',
-                                        color: 'black',
-                                        padding: '5px',
-                                        borderRadius: '5px',
-                                        fontWeight: 'bold'
-                                    }}>
-                                        $ {(item.precio).toFixed(2)}
-                                    </div>
-                                    <span><strong>{item.nombre}</strong></span>
                                 </div>
-                            </div>
 
-                        ))
-                    }
-                </ul>
+                            ))
+                        }
+                    </ul>
+                }
+
             </Col>
 
         </Row>
