@@ -1,0 +1,11 @@
+.custom-modal-content {
+    background-color: transparent;
+    border: none;
+}
+
+.custom-modal-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+}
