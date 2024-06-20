@@ -3,6 +3,8 @@ import Cargando from "../components/Cargando"
 import Mensaje from "../components/Mensaje"
 import { Button, Col, Container, Form, InputGroup, Row, Table } from "react-bootstrap"
 import Post from "../services/Post"
+import PostFile from "../services/PostFile"
+
 import Select from 'react-select'
 import md5 from 'md5'
 function AgregarTransporte() {
@@ -20,13 +22,15 @@ function AgregarTransporte() {
     const GuardarTransporte = async (event) => {
         event.preventDefault(); // Prevent default form submission
         const formData = new FormData(event.target); // Recolectar datos del formulario
-        const contrasena = formData.get('contrasena');
-        const clave = md5(contrasena);//md5 de contrasena
-        formData.append("clave", clave)
+
+
+        formData.append('archivo', imagen);
+
         setCargando(true);
 
         // Realizar la solicitud POST utilizando axios
-        const response = await Post('API/postUsuario.php', formData)
+        const response = await PostFile('API/postTransporte.php', formData);
+
 
         setCargando(false);
         if (response.exito) {
@@ -47,112 +51,52 @@ function AgregarTransporte() {
 
         }
     }
-    const opciones = [
-        { value: 'ADM', label: 'Administrador' },
-        { value: 'RED', label: 'Recaudador' }
-    ];
 
+    const [imagen, setImagen] = useState(null);
 
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setImagen(file);
+    };
     return (<>
 
         <Cargando show={cargando} />
         <Mensaje tipo="informacion" mensaje={mensaje} show={mostrarMensaje} setShow={setMostrarMensaje} />
 
         <h5><strong>Configurables</strong></h5>
-        <Row>
-
-
-            <Col >
-                <Form onSubmit={GuardarTransporte}>
-
-                    <Row >
-
-
-
-                        <Col sm={6} className="my-1">
-                            <Form.Label  >
-                                <strong>Apellidos</strong>
-                            </Form.Label>
-                            <InputGroup>
-
-                                <Form.Control
-                                    type="text"
-                                    required
-                                    name="apellidos"
-                                    placeholder="Apellidos de la persona"
-
-                                />
-                            </InputGroup>
-                        </Col>
-                        <Col sm={6} className="my-1">
-                            <Form.Label  >
-                                <strong>Nombres</strong>
-                            </Form.Label>
-                            <InputGroup>
-
-                                <Form.Control
-                                    type="text"
-                                    required
-                                    name="nombres"
-                                    placeholder="Nombres de la persona"
-
-                                />
-                            </InputGroup>
-                        </Col>
-                        <Col sm={6} className="my-1">
-                            <Form.Label  >
-                                <strong>Cedula</strong>
-                            </Form.Label>
-                            <InputGroup>
-
-                                <Form.Control
-                                    type="text"
-                                    required
-                                    name="cedula"
-                                    placeholder="Cedula de la persona"
-
-                                />
-                            </InputGroup>
-                        </Col>
-                        <Col sm={6} className="my-1">
-                            <Form.Label  >
-                                <strong>Clave</strong>
-                            </Form.Label>
-                            <InputGroup>
-
-                                <Form.Control
-                                    type="text"
-                                    required
-                                    name="contrasena"
-                                    placeholder="Clave de la persona"
-
-                                />
-                            </InputGroup>
-                        </Col>
-                        <Col sm={6} className="my-1">
-                            <Form.Label>
-                                <strong>Tipo de usuario</strong>
-                            </Form.Label>
-                            <InputGroup>
-                                <Select
-                                    name="tipo"
-                                    options={opciones}
-                                    placeholder="Selecciona una opción"
-                                />
-                            </InputGroup>
-                        </Col>
-
-
-
-
-                        <Col sm={12} className="my-1">
-                            <Button style={{ backgroundColor: "black", borderColor: "black", color: 'white' }} className="form-control" type="submit">Guardar</Button>
-                        </Col>
-                    </Row>
-                </Form>
-            </Col>
-
-        </Row>
+        <Form onSubmit={GuardarTransporte}>
+            <Row>
+                <Col sm={6} className="my-1">
+                    <Form.Label>
+                        <strong>Nombre</strong>
+                    </Form.Label>
+                    <InputGroup>
+                        <Form.Control name="nombre" type="text" required />
+                    </InputGroup>
+                </Col>
+                <Col sm={6} className="my-1">
+                    <Form.Label>
+                        <strong>Imagen</strong>
+                    </Form.Label>
+                    <InputGroup>
+                        <Form.Control type="file" onChange={handleFileChange} required />
+                    </InputGroup>
+                </Col>
+                <Col sm={6} className="my-1">
+                    <Form.Label>
+                        <strong>Precio</strong>
+                    </Form.Label>
+                    <InputGroup>
+                        <Form.Control name="precio" type="number" step={0.01} required />
+                    </InputGroup>
+                </Col>
+                <Col sm={12} className="my-1">
+                    <Button style={{ backgroundColor: 'black', borderColor: 'black', color: 'white' }} className="form-control" type="submit">
+                        Guardar
+                    </Button>
+                </Col>
+            </Row>
+        </Form>
 
 
     </>)

@@ -25,11 +25,25 @@ const Layout = ({ children }) => {
                     link: 'postTransporte'
                 },
                 {
-                    nombre: 'Movimiento',
+                    nombre: 'Actualizar',
                     link: 'putTransporte'
                 }
             ]
         },
+        {
+            nombre: 'Tipo de cooperativa',
+            link: '',
+            hijo: [
+                {
+                    nombre: 'Agregar',
+                    link: 'postCooperativa'
+                },
+                {
+                    nombre: 'Actualizar',
+                    link: 'putCooperativa'
+                }
+            ]
+        }
     ]
     const [datos, setDatos] = useState(MenuConstante);
     const isMobile = useMediaQuery({ maxWidth: 768 });

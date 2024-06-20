@@ -1,0 +1,40 @@
+@media (min-width: 1200px) {}
+
+@media (max-width: 1200px) {}
+
+.movies {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,
+            minmax(140px,
+                1fr));
+    gap: 5px;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+
+}
+
+.movie-poster {
+    border: 1px solid rgb(99, 85, 85);
+    padding: 5px;
+    background-color: white;
+    width: 100%;
+    height: auto;
+
+    border-radius: 5px;
+}
+
+iframe {
+    height: calc(100vh - 40px);
+}
+
+
+tr>th {
+    background-color: rgb(139, 146, 163) !important;
+    color: white !important;
+
+}
+
+.altura_pantalla {
+    height: calc(100vh - 200px);
+}
