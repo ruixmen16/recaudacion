@@ -3,11 +3,8 @@ import Cargando from "../components/Cargando"
 import Mensaje from "../components/Mensaje"
 import { Button, Col, Container, Form, InputGroup, Row, Table } from "react-bootstrap"
 import Post from "../services/Post"
-import PostFile from "../services/PostFile"
 
-import Select from 'react-select'
-import md5 from 'md5'
-function AgregarTransporte() {
+function AgregarCooperativa() {
     const [cargando, setCargando] = useState(false)
 
     const [mensaje, setMensaje] = useState('')
@@ -19,17 +16,16 @@ function AgregarTransporte() {
         // ObtenerConfigurables()
     }, [])
 
-    const GuardarTransporte = async (event) => {
+    const GuardarCooperativa = async (event) => {
         event.preventDefault(); // Prevent default form submission
         const formData = new FormData(event.target); // Recolectar datos del formulario
 
 
-        formData.append('archivo', imagen);
 
         setCargando(true);
 
         // Realizar la solicitud POST utilizando axios
-        const response = await PostFile('API/postTransporte.php', formData);
+        const response = await Post('API/postCooperativa.php', formData);
 
 
         setCargando(false);
@@ -52,19 +48,14 @@ function AgregarTransporte() {
         }
     }
 
-    const [imagen, setImagen] = useState(null);
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        setImagen(file);
-    };
     return (<>
 
         <Cargando show={cargando} />
         <Mensaje tipo="informacion" mensaje={mensaje} show={mostrarMensaje} setShow={setMostrarMensaje} />
 
-        <h5><strong>Agregar tipo de transporte</strong></h5>
-        <Form onSubmit={GuardarTransporte}>
+        <h5><strong>Agregar tipo de cooperativa</strong></h5>
+        <Form onSubmit={GuardarCooperativa}>
             <Row>
                 <Col sm={6} className="my-1">
                     <Form.Label>
@@ -74,20 +65,13 @@ function AgregarTransporte() {
                         <Form.Control name="nombre" type="text" required />
                     </InputGroup>
                 </Col>
+
                 <Col sm={6} className="my-1">
                     <Form.Label>
-                        <strong>Imagen</strong>
+                        <strong>Disco</strong>
                     </Form.Label>
                     <InputGroup>
-                        <Form.Control type="file" onChange={handleFileChange} required />
-                    </InputGroup>
-                </Col>
-                <Col sm={6} className="my-1">
-                    <Form.Label>
-                        <strong>Precio</strong>
-                    </Form.Label>
-                    <InputGroup>
-                        <Form.Control name="precio" type="number" step={0.01} required />
+                        <Form.Control name="disco" type="text" required />
                     </InputGroup>
                 </Col>
                 <Col sm={12} className="my-1">
@@ -101,4 +85,4 @@ function AgregarTransporte() {
 
     </>)
 }
-export default AgregarTransporte
+export default AgregarCooperativa

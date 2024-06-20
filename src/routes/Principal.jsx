@@ -25,23 +25,43 @@ function Principal() {
     };
     const [formData, setFormData] = useState(valoresInicialesFormData);
     const [transportes, setTransportes] = useState([]);
-    const [cooperativas, setCooperativas] = useState([
+    const [cooperativas, setCooperativas] = useState([]);
 
-        {
-            value: "Disco 101",
-            label: "Reina del camino"
-        }
-    ]);
-
+    const [valorCooperativas, setValorCooperativas] = useState({});
 
     useEffect(() => {
 
         ObtenerTransportes()
+        ObtenerCooperativas()
     }, [])
 
     const handleSelectCooperativa = (evento) => {
 
-        setFormData({ ...formData, disco: evento.value })
+        setValorCooperativas(evento)
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            disco: evento.value // Actualizar disco con el valor seleccionado
+        }));
+    }
+    const ObtenerCooperativas = async () => {
+        setCargando(true)
+        const resp = await Get('API/getCooperativas.php')
+        setCargando(false)
+
+        if (!resp.exito) {
+            setMensaje(resp.mensaje)
+            setMostrarMensaje(true)
+            return
+        }
+
+        const options = resp.datos.map(item => ({
+            value: item.disco, // Valor que se enviará al seleccionar la opción
+            label: item.nombre // Etiqueta visible en el selector
+        }));
+
+        setCooperativas(options)
+
+
     }
     const ObtenerTransportes = async () => {
         setCargando(true)
@@ -54,6 +74,7 @@ function Principal() {
             return
         }
 
+
         setTransportes(resp.datos)
 
 
@@ -64,6 +85,36 @@ function Principal() {
         const formData = new FormData(event.target);
 
 
+
+
+
+        const DatosPersona = localStorage.getItem("DatosPersona")
+        const datos = JSON.parse(DatosPersona)
+
+
+        formData.append('cooperativa', valorCooperativas.label);
+        formData.append('idPersona', datos.id);
+
+
+
+
+        setCargando(true);
+
+        // Realizar la solicitud POST utilizando axios
+        const response = await Post('API/postRecaudacion.php', formData);
+
+
+        setCargando(false);
+
+
+        setMensaje(response.mensaje); // Establecer el mensaje de respuesta
+        setMostrarMensaje(true);
+
+        setFormData({
+            monto: 0.00,
+            tipovehiculo: "",
+            disco: ""
+        });
     }
 
 
@@ -101,9 +152,10 @@ function Principal() {
                                 type="number"
                                 step={0.01}
                                 required
-                                disabled
+                                readOnly
                                 name="monto"
                                 value={formData.monto}
+
 
                             />
                         </InputGroup>
@@ -117,8 +169,8 @@ function Principal() {
                             <Form.Control
                                 type="text"
                                 required
-                                disabled
-                                name="tipovehiculo"
+                                readOnly
+                                name="tipotransporte"
                                 placeholder="Tipo de vehiculo.."
                                 value={formData.tipovehiculo}
 
@@ -133,7 +185,8 @@ function Principal() {
                         <InputGroup>
                             <Select
                                 className="form-control"
-                                name="tipo"
+                                name="cooperativa"
+                                value={valorCooperativas}
                                 options={cooperativas}
                                 placeholder="Selecciona una opción"
                                 onChange={(e) => { handleSelectCooperativa(e) }}
@@ -149,10 +202,11 @@ function Principal() {
                             <Form.Control
                                 type="text"
                                 required
-                                disabled
+                                readOnly
                                 name="disco"
                                 placeholder="Disco.."
                                 value={formData.disco}
+
 
 
                             />

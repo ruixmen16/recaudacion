@@ -9,6 +9,11 @@ import ActualizarTransporte from './routes/ActualizarTransporte.jsx';
 import ErrorPage from './routes/ErrorPage.jsx';
 import Layout from './layout.jsx';
 
+
+import AgregarCooperativa from './routes/AgregarCooperativa.jsx';
+import ActualizarCooperativa from './routes/ActualizarCooperativa.jsx';
+
+
 import {
   createBrowserRouter,
   createHashRouter,
@@ -44,6 +49,16 @@ const router = createBrowserRouter([
   }, {
     path: "/putTransporte",
     element: <Layout> <ActualizarTransporte /></Layout>,
+    errorElement: <ErrorPage />,
+
+  }, {
+    path: "/postCooperativa",
+    element: <Layout> <AgregarCooperativa /></Layout>,
+    errorElement: <ErrorPage />,
+
+  }, {
+    path: "/putCooperativa",
+    element: <Layout> <ActualizarCooperativa /></Layout>,
     errorElement: <ErrorPage />,
 
   }

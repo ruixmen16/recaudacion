@@ -5,7 +5,7 @@ import { Button, Col, Container, Form, InputGroup, Row, Table } from "react-boot
 import Post from "../services/Post"
 import Select from 'react-select'
 import md5 from 'md5'
-function ActualizarTransporte() {
+function ActualizarCooperativa() {
     const [cargando, setCargando] = useState(false)
 
     const [mensaje, setMensaje] = useState('')
@@ -58,10 +58,10 @@ function ActualizarTransporte() {
         <Cargando show={cargando} />
         <Mensaje tipo="informacion" mensaje={mensaje} show={mostrarMensaje} setShow={setMostrarMensaje} />
 
-        <h5><strong>Actualizar transporte</strong></h5>
+        <h5><strong>Actualizar cooperativa</strong></h5>
 
 
 
     </>)
 }
-export default ActualizarTransporte
+export default ActualizarCooperativa
