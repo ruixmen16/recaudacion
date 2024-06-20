@@ -4,6 +4,7 @@ import Mensaje from "../components/Mensaje"
 import { Button, Col, Container, Form, Image, InputGroup, Row, Table } from "react-bootstrap"
 import Post from "../services/Post"
 import Get from "../services/Get"
+import { renderToString } from 'react-dom/server';
 import { URL_DOMINIO } from "../../constantes"
 import '../estilos/estilos.css'
 import Select from 'react-select'
@@ -55,8 +56,97 @@ function Principal() {
 
 
     }
+    const BodyCertificado = ({ datos }) => {
 
 
+        /*
+           fechayhora: '',
+            monto: '',
+            tipoVehiculo: '',
+            cooperativa: '',
+            disco: '',
+        */
+        return <>
+            <h1 style={{ textAlign: 'center' }}>Terminal Terrestre de Portoviejo</h1>
+            <h2 style={{ textAlign: 'center' }}>TICKET DE INGRESO</h2>
+            <Row style={{ border: '1px solid black' }}>
+                <Col sm={12} >
+                    <span style={{ fontSize: 30 }}>Fecha y hora: {datos.fechayhora}</span>
+                </Col>
+
+                <Col sm={12} >
+                    <span style={{ fontSize: 30 }}>Monto: {datos.monto}</span>
+                </Col>
+
+                <Col sm={12} >
+                    <span style={{ fontSize: 30 }}> Tipo de vehículo: {datos.tipoVehiculo}</span>
+
+                </Col>
+
+                <Col sm={6} >
+                    <span style={{ fontSize: 30 }}> Cooperativa: {datos.cooperativa}</span>
+                </Col>
+
+                <Col sm={12} >
+                    <span style={{ fontSize: 30 }}> Disco: {datos.disco}</span>
+                </Col>
+            </Row>
+            <h2 style={{ textAlign: 'left' }}>GRACIAS POR SU VISITA</h2>
+
+        </>
+    }
+
+    const [infoImpresora, setInfoImpresora] = useState(
+        {
+            fechayhora: '',
+            monto: '',
+            tipoVehiculo: '',
+            cooperativa: '',
+            disco: '',
+        }
+    )
+    const crearDocumentoA4 = async () => {
+
+        var fechaActual = new Date();
+        var dia = fechaActual.getDate();
+        var mes = fechaActual.getMonth() + 1; // El mes comienza desde 0, por lo que se suma 1
+        var año = fechaActual.getFullYear();
+        var hora = fechaActual.getHours();
+        var minutos = fechaActual.getMinutes();
+        var segundos = fechaActual.getSeconds();
+        var fechaFormateada = dia + '/' + mes + '/' + año + ' ' + hora + ':' + minutos + ':' + segundos;
+
+        infoImpresora.fechayhora = fechaFormateada
+        infoImpresora.monto = "$ 1.00"
+        infoImpresora.tipoVehiculo = "Intraprovinciales"
+        infoImpresora.cooperativa = "Rocafuerte"
+        infoImpresora.disco = "001"
+        setInfoImpresora(infoImpresora)
+
+        const contenido =
+            '<html>' +
+            '<head>' +
+            '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">' + // Incluir el archivo CSS de Bootstrap aquí
+            '</head>' +
+            '<body>' +
+            renderToString(<BodyCertificado datos={infoImpresora} ></BodyCertificado>) +
+            '</body>' +
+            '</html>'
+
+        const blob = new Blob([contenido], { type: 'text/html' });
+
+
+
+        const url = URL.createObjectURL(blob);
+        const ventana = window.open(url, '_blank');
+        ventana.document.open();
+        ventana.document.write(contenido);
+        ventana.document.close();
+        ventana.onload = function () {
+            ventana.print();
+        };
+
+    }
     const ObtenerRecaudacionesByIdUsuario = async () => {
 
         const DatosPersona = localStorage.getItem("DatosPersona")
@@ -103,6 +193,8 @@ function Principal() {
     const GuardarConfigurables = async (event) => {
         event.preventDefault(); // Prevent default form submission
 
+
+        /*
         const formData = new FormData(event.target);
 
 
@@ -137,6 +229,10 @@ function Principal() {
             disco: ""
         });
         ObtenerRecaudacionesByIdUsuario()
+        */
+
+
+        crearDocumentoA4()
     }
 
 
