@@ -67,31 +67,31 @@ function Principal() {
             disco: '',
         */
         return <>
-            <h1 style={{ textAlign: 'center' }}>Terminal Terrestre de Portoviejo</h1>
-            <h2 style={{ textAlign: 'center' }}>TICKET DE INGRESO</h2>
-            <Row style={{ border: '1px solid black' }}>
+            <p style={{ textAlign: 'left' }}>Terminal Terrestre de Portoviejo</p>
+            <p style={{ textAlign: 'left' }}>TICKET DE INGRESO</p>
+            <Row style={{ margin: 0, padding: 0 }}>
                 <Col sm={12} >
-                    <span style={{ fontSize: 30 }}>Fecha y hora: {datos.fechayhora}</span>
+                    <span style={{ fontSize: 15 }}>Fecha y hora: {datos.fechayhora}</span>
                 </Col>
 
                 <Col sm={12} >
-                    <span style={{ fontSize: 30 }}>Monto: {datos.monto}</span>
+                    <span style={{ fontSize: 15 }}>Monto: {datos.monto}</span>
                 </Col>
 
                 <Col sm={12} >
-                    <span style={{ fontSize: 30 }}> Tipo de vehículo: {datos.tipoVehiculo}</span>
+                    <span style={{ fontSize: 15 }}> Tipo de vehículo: {datos.tipoVehiculo}</span>
 
                 </Col>
 
                 <Col sm={6} >
-                    <span style={{ fontSize: 30 }}> Cooperativa: {datos.cooperativa}</span>
+                    <span style={{ fontSize: 15 }}> Cooperativa: {datos.cooperativa}</span>
                 </Col>
 
                 <Col sm={12} >
-                    <span style={{ fontSize: 30 }}> Disco: {datos.disco}</span>
+                    <span style={{ fontSize: 15 }}> Disco: {datos.disco}</span>
                 </Col>
             </Row>
-            <h2 style={{ textAlign: 'left' }}>GRACIAS POR SU VISITA</h2>
+            <p style={{ textAlign: 'left' }}>GRACIAS POR SU VISITA</p>
 
         </>
     }
@@ -116,22 +116,46 @@ function Principal() {
         var segundos = fechaActual.getSeconds();
         var fechaFormateada = dia + '/' + mes + '/' + año + ' ' + hora + ':' + minutos + ':' + segundos;
 
+
+
+        let monto = parseFloat(valorCooperativas.precio).toFixed(2)
         infoImpresora.fechayhora = fechaFormateada
-        infoImpresora.monto = "$ 1.00"
-        infoImpresora.tipoVehiculo = "Intraprovinciales"
-        infoImpresora.cooperativa = "Rocafuerte"
-        infoImpresora.disco = "001"
+        infoImpresora.monto = "$ " + monto
+        infoImpresora.tipoVehiculo = formData.tipovehiculo
+        infoImpresora.cooperativa = valorCooperativas.label
+        infoImpresora.disco = formData.disco
         setInfoImpresora(infoImpresora)
 
         const contenido =
             '<html>' +
             '<head>' +
-            '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">' + // Incluir el archivo CSS de Bootstrap aquí
+            '<style>' +
+            '@page {' +
+            'size: 80mm 100mm;' + // Ancho 80 mm y alto 100 mm
+            'margin: 0mm;' + // Definir los márgenes como 0 en todos los lados
+            '}' +
+            'body {' +
+            'font-family: Arial, sans-serif;' +
+            'margin: 0mm;' + // Asegurar que el body también tenga márgenes 0
+            'padding: 0mm;' + // Ajustar el espacio interno según sea necesario
+            '}' +
+            'h1 {' +
+            'text-align: center;' +
+            '}' +
+            'p {' +
+            'text-align: justify;' +
+            '}' +
+            '.fondo-gris {' +
+            'background-color: gray !important;' +
+            '}' +
+            '</style>' +
             '</head>' +
             '<body>' +
-            renderToString(<BodyCertificado datos={infoImpresora} ></BodyCertificado>) +
+            renderToString(<BodyCertificado datos={infoImpresora}></BodyCertificado>) +
             '</body>' +
-            '</html>'
+            '</html>';
+
+
 
         const blob = new Blob([contenido], { type: 'text/html' });
 
@@ -139,6 +163,7 @@ function Principal() {
 
         const url = URL.createObjectURL(blob);
         const ventana = window.open(url, '_blank');
+
         ventana.document.open();
         ventana.document.write(contenido);
         ventana.document.close();
@@ -194,7 +219,7 @@ function Principal() {
         event.preventDefault(); // Prevent default form submission
 
 
-        /*
+
         const formData = new FormData(event.target);
 
 
@@ -229,7 +254,9 @@ function Principal() {
             disco: ""
         });
         ObtenerRecaudacionesByIdUsuario()
-        */
+
+
+
 
 
         crearDocumentoA4()

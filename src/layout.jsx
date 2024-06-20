@@ -16,39 +16,39 @@ const Layout = ({ children }) => {
             link: 'unioncooperativa',
             hijo: []
         },
-        {
-            nombre: 'Usuario',
-            link: 'usuario',
-            hijo: []
-        },
-        {
-            nombre: 'Tipo de transporte',
-            link: '',
-            hijo: [
-                {
-                    nombre: 'Agregar',
-                    link: 'postTransporte'
-                },
-                {
-                    nombre: 'Actualizar',
-                    link: 'putTransporte'
-                }
-            ]
-        },
-        {
-            nombre: 'Tipo de cooperativa',
-            link: '',
-            hijo: [
-                {
-                    nombre: 'Agregar',
-                    link: 'postCooperativa'
-                },
-                {
-                    nombre: 'Actualizar',
-                    link: 'putCooperativa'
-                }
-            ]
-        }
+        // {
+        //     nombre: 'Usuario',
+        //     link: 'usuario',
+        //     hijo: []
+        // },
+        // {
+        //     nombre: 'Tipo de transporte',
+        //     link: '',
+        //     hijo: [
+        //         {
+        //             nombre: 'Agregar',
+        //             link: 'postTransporte'
+        //         },
+        //         {
+        //             nombre: 'Actualizar',
+        //             link: 'putTransporte'
+        //         }
+        //     ]
+        // },
+        // {
+        //     nombre: 'Tipo de cooperativa',
+        //     link: '',
+        //     hijo: [
+        //         {
+        //             nombre: 'Agregar',
+        //             link: 'postCooperativa'
+        //         },
+        //         {
+        //             nombre: 'Actualizar',
+        //             link: 'putCooperativa'
+        //         }
+        //     ]
+        // }
     ]
     const [datos, setDatos] = useState(MenuConstante);
     const isMobile = useMediaQuery({ maxWidth: 768 });

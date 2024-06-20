@@ -7,6 +7,7 @@ import Get from "../services/Get"
 import { URL_DOMINIO } from "../../constantes"
 import '../estilos/estilos.css'
 import Select from 'react-select'
+import { renderToString } from 'react-dom/server';
 
 
 
@@ -95,6 +96,122 @@ function UnionCooperativa() {
 
 
     }
+    const BodyCertificado = ({ datos }) => {
+
+
+        /*
+           fechayhora: '',
+            monto: '',
+            tipoVehiculo: '',
+            cooperativa: '',
+            disco: '',
+        */
+        return <>
+            <p style={{ textAlign: 'left' }}>Terminal Terrestre de Portoviejo</p>
+            <p style={{ textAlign: 'left' }}>TICKET DE INGRESO</p>
+            <Row style={{ margin: 0, padding: 0 }}>
+                <Col sm={12} >
+                    <span style={{ fontSize: 15 }}>Fecha y hora: {datos.fechayhora}</span>
+                </Col>
+
+                <Col sm={12} >
+                    <span style={{ fontSize: 15 }}>Monto: {datos.monto}</span>
+                </Col>
+
+                <Col sm={12} >
+                    <span style={{ fontSize: 15 }}> Tipo de vehículo: {datos.tipoVehiculo}</span>
+
+                </Col>
+
+                <Col sm={6} >
+                    <span style={{ fontSize: 15 }}> Cooperativa: {datos.cooperativa}</span>
+                </Col>
+
+                <Col sm={12} >
+                    <span style={{ fontSize: 15 }}> Disco: {datos.disco}</span>
+                </Col>
+            </Row>
+            <p style={{ textAlign: 'left' }}>GRACIAS POR SU VISITA</p>
+
+        </>
+    }
+
+    const [infoImpresora, setInfoImpresora] = useState(
+        {
+            fechayhora: '',
+            monto: '',
+            tipoVehiculo: '',
+            cooperativa: '',
+            disco: '',
+        }
+    )
+    const crearDocumentoA4 = async () => {
+
+        var fechaActual = new Date();
+        var dia = fechaActual.getDate();
+        var mes = fechaActual.getMonth() + 1; // El mes comienza desde 0, por lo que se suma 1
+        var año = fechaActual.getFullYear();
+        var hora = fechaActual.getHours();
+        var minutos = fechaActual.getMinutes();
+        var segundos = fechaActual.getSeconds();
+        var fechaFormateada = dia + '/' + mes + '/' + año + ' ' + hora + ':' + minutos + ':' + segundos;
+
+
+
+        let monto = parseFloat(valorCooperativas.precio).toFixed(2)
+        infoImpresora.fechayhora = fechaFormateada
+        infoImpresora.monto = "$ " + monto
+        infoImpresora.tipoVehiculo = formData.tipovehiculo
+        infoImpresora.cooperativa = valorCooperativas.label
+        infoImpresora.disco = formData.disco
+        setInfoImpresora(infoImpresora)
+
+        const contenido =
+            '<html>' +
+            '<head>' +
+            '<style>' +
+            '@page {' +
+            'size: 80mm 100mm;' + // Ancho 80 mm y alto 100 mm
+            'margin: 0mm;' + // Definir los márgenes como 0 en todos los lados
+            '}' +
+            'body {' +
+            'font-family: Arial, sans-serif;' +
+            'margin: 0mm;' + // Asegurar que el body también tenga márgenes 0
+            'padding: 0mm;' + // Ajustar el espacio interno según sea necesario
+            '}' +
+            'h1 {' +
+            'text-align: center;' +
+            '}' +
+            'p {' +
+            'text-align: justify;' +
+            '}' +
+            '.fondo-gris {' +
+            'background-color: gray !important;' +
+            '}' +
+            '</style>' +
+            '</head>' +
+            '<body>' +
+            renderToString(<BodyCertificado datos={infoImpresora}></BodyCertificado>) +
+            '</body>' +
+            '</html>';
+
+
+
+        const blob = new Blob([contenido], { type: 'text/html' });
+
+
+
+        const url = URL.createObjectURL(blob);
+        const ventana = window.open(url, '_blank');
+
+        ventana.document.open();
+        ventana.document.write(contenido);
+        ventana.document.close();
+        ventana.onload = function () {
+            ventana.print();
+        };
+
+    }
     const GuardarConfigurables = async (event) => {
         event.preventDefault(); // Prevent default form submission
 
@@ -132,6 +249,7 @@ function UnionCooperativa() {
             disco: ""
         });
         ObtenerRecaudacionesByIdUsuario()
+        crearDocumentoA4()
     }
 
 
