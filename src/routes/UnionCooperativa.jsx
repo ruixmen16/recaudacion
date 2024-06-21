@@ -12,31 +12,28 @@ import { renderToString } from 'react-dom/server';
 
 
 function UnionCooperativa() {
-    const [selectKey, setSelectKey] = useState(0); // Estado para la clave del Select
 
     const [cargando, setCargando] = useState(false)
 
     const [mensaje, setMensaje] = useState('')
     const [mostrarMensaje, setMostrarMensaje] = useState(false);
     const valoresInicialesFormData = {
-        monto: 0.00,
-        tipovehiculo: "",
-        tipotransporte: "",
+        monto: 0,
         disco: ""
 
     };
     const [formData, setFormData] = useState(valoresInicialesFormData);
-    const [transportes, setTransportes] = useState([]);
+
     const [cooperativas, setCooperativas] = useState([]);
 
     const [valorCooperativas, setValorCooperativas] = useState(null);
-    const [valorTransporte, setValorTransporte] = useState(0);
+
     const [recaudaciones, setRecaudaciones] = useState(0);
 
 
     useEffect(() => {
 
-        ObtenerTransportes()
+        getCooperativasUnion()
 
         ObtenerRecaudacionesByIdUsuario()
     }, [])
@@ -60,11 +57,14 @@ function UnionCooperativa() {
         const DatosPersona = localStorage.getItem("DatosPersona")
         const datos = JSON.parse(DatosPersona)
 
-
+        var fechaActual = new Date();
+        // Formatear la fecha en formato YYYY-MM-DD
+        var fechaFormateada = fechaActual.toISOString().split('T')[0];
         // datos.id
         let parametros = {
             id: datos.id,
-            fecha: ""
+            fecha: fechaFormateada,
+            tipotransporte: "union"
 
         }
         setCargando(true)
@@ -82,32 +82,11 @@ function UnionCooperativa() {
 
 
     }
-    const ObtenerTransportes = async () => {
-        setCargando(true)
-        const resp = await Get('API/getTransportesUnionCooperativa.php')
-        setCargando(false)
 
-        if (!resp.exito) {
-            setMensaje(resp.mensaje)
-            setMostrarMensaje(true)
-            return
-        }
-
-
-        setTransportes(resp.datos)
-
-
-    }
     const BodyCertificado = ({ datos }) => {
 
 
-        /*
-           fechayhora: '',
-            monto: '',
-            tipoVehiculo: '',
-            cooperativa: '',
-            disco: '',
-        */
+
         return <>
             <p style={{ textAlign: 'left' }}>Terminal Terrestre de Portoviejo</p>
             <p style={{ textAlign: 'left' }}>TICKET DE INGRESO</p>
@@ -121,7 +100,7 @@ function UnionCooperativa() {
                 </Col>
 
                 <Col sm={12} >
-                    <span style={{ fontSize: 15 }}> Tipo de vehículo: {datos.tipoVehiculo}</span>
+                    <span style={{ fontSize: 15 }}> Tipo: Unión de cooperativa</span>
 
                 </Col>
 
@@ -142,7 +121,6 @@ function UnionCooperativa() {
         {
             fechayhora: '',
             monto: '',
-            tipoVehiculo: '',
             cooperativa: '',
             disco: '',
         }
@@ -163,7 +141,6 @@ function UnionCooperativa() {
         let monto = parseFloat(valorCooperativas.precio).toFixed(2)
         infoImpresora.fechayhora = fechaFormateada
         infoImpresora.monto = "$ " + monto
-        infoImpresora.tipoVehiculo = formData.tipovehiculo
         infoImpresora.cooperativa = valorCooperativas.label
         infoImpresora.disco = formData.disco
         setInfoImpresora(infoImpresora)
@@ -215,8 +192,7 @@ function UnionCooperativa() {
         ventana.onafterprint = function () {
             ventana.close();
         };
-        setValorCooperativas(null);
-        setSelectKey(prevKey => prevKey + 1); // Cambia la clave para reiniciar el Select
+
 
     }
     const GuardarConfigurables = async (event) => {
@@ -226,18 +202,11 @@ function UnionCooperativa() {
         const formData = new FormData(event.target);
 
 
-
-
-
         const DatosPersona = localStorage.getItem("DatosPersona")
         const datos = JSON.parse(DatosPersona)
 
-
         formData.append('cooperativa', valorCooperativas.label);
         formData.append('idPersona', datos.id);
-        formData.set('tipotransporte', valorTransporte);
-
-
 
         setCargando(true);
 
@@ -247,36 +216,32 @@ function UnionCooperativa() {
 
         setCargando(false);
 
-
         setMensaje(response.mensaje); // Establecer el mensaje de respuesta
         setMostrarMensaje(true);
 
-        setFormData({
-            monto: 0.00,
-            tipovehiculo: "",
+
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            monto: 0,
             disco: ""
-        });
+        }));
+
         ObtenerRecaudacionesByIdUsuario()
 
         if (response.exito) {
 
             crearDocumentoA4()
-        } else {
-            setValorCooperativas(null);
-            setSelectKey(prevKey => prevKey + 1); // Cambia la clave para reiniciar el Select
         }
+
 
     }
 
 
-    const handleImagenTipoTransporte = async (info) => {
+    const getCooperativasUnion = async () => {
 
 
 
-
-        setValorTransporte(info.id)
-
-        let id = info.id
+        let id = 5
         let parametros = { id }
         setCargando(true)
 
@@ -297,15 +262,6 @@ function UnionCooperativa() {
 
         setCooperativas(options)
 
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            tipovehiculo: info.nombre,
-            tipotransporte: info.id
-
-        }));
-        /////////////////        
-
-
 
     }
     return (<>
@@ -318,7 +274,7 @@ function UnionCooperativa() {
 
         <Row>
 
-            <Col sm={6}>
+            <Col sm={12}>
                 <Form onSubmit={GuardarConfigurables}>
 
 
@@ -337,30 +293,11 @@ function UnionCooperativa() {
                                 readOnly
                                 name="monto"
                                 value={formData.monto}
-                                onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
-
 
                             />
                         </InputGroup>
                     </Col>
-                    <Col className="my-1">
-                        <Form.Label  >
-                            <strong>Tipo de vehiculo</strong>
-                        </Form.Label>
-                        <InputGroup>
 
-                            <Form.Control
-                                type="text"
-                                required
-
-                                name="tipotransporte"
-                                placeholder="Tipo de vehiculo.."
-                                value={formData.tipovehiculo}
-                                onChange={(e) => setFormData({ ...formData, tipovehiculo: e.target.value })}
-
-                            />
-                        </InputGroup>
-                    </Col>
 
                     <Col className="my-1">
                         <Form.Label>
@@ -368,7 +305,6 @@ function UnionCooperativa() {
                         </Form.Label>
                         <InputGroup>
                             <Select
-                                key={selectKey} // Cambia la clave del Select
                                 required
                                 className="form-control"
                                 name="cooperativa"
@@ -387,7 +323,7 @@ function UnionCooperativa() {
 
                             <Form.Control
                                 type="text"
-
+                                required
 
                                 name="disco"
                                 placeholder="Disco.."
@@ -412,57 +348,7 @@ function UnionCooperativa() {
 
                 </Form>
             </Col>
-            <Col sm={6}>
-                {
-                    transportes.length &&
-                    <ul className='movies' >
-                        {
-                            transportes.map((item, index) => (
 
-                                <div key={index} className='movie-poster' >
-
-
-                                    <div style={{ position: 'relative', maxHeight: 200, cursor: 'pointer' }}>
-                                        <div
-                                            onClick={() => handleImagenTipoTransporte(item)}
-                                            style={{
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                maxHeight: 150
-                                            }}>
-                                            <Image
-                                                fluid
-                                                style={{
-                                                    width: '100%',
-                                                    objectFit: 'contain'
-                                                }}
-                                                rounded
-                                                src={URL_DOMINIO + item.rutaimagen}
-                                            />
-                                        </div>
-                                        {/* <div style={{
-                                            //position: 'absolute',
-                                            top: 0,
-                                            right: 0,
-                                            marginTop: 10,
-                                            backgroundColor: 'yellow',
-                                            color: 'black',
-                                            padding: '5px',
-                                            borderRadius: '5px',
-                                            fontWeight: 'bold'
-                                        }}>
-                                            $ {(item.precio).toFixed(2)}
-                                        </div> */}
-                                        <span><strong>{item.nombre}</strong></span>
-                                    </div>
-                                </div>
-
-                            ))
-                        }
-                    </ul>
-                }
-
-            </Col>
 
         </Row>
 

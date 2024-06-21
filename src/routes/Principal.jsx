@@ -191,7 +191,8 @@ function Principal() {
         // datos.id
         let parametros = {
             id: datos.id,
-            fecha: fechaFormateada
+            fecha: fechaFormateada,
+            tipotransporte: "normal"
 
         }
         setCargando(true)
@@ -259,11 +260,14 @@ function Principal() {
         setMensaje(response.mensaje); // Establecer el mensaje de respuesta
         setMostrarMensaje(true);
 
-        setFormData({
+
+
+        setFormData(prevFormData => ({
+            ...prevFormData,
             monto: 0.00,
+            disco: "",
             tipovehiculo: "",
-            disco: ""
-        });
+        }));
         ObtenerRecaudacionesByIdUsuario()
 
 
@@ -429,7 +433,7 @@ function Principal() {
                                 readOnly
                                 name="monto"
                                 value={formData.monto}
-                                onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
+
 
 
                             />

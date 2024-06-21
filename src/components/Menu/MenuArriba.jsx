@@ -18,6 +18,7 @@ function MenuTelefono({ MenuConstante }) {
 
 
     useEffect(() => {
+
         const DatosPersona = localStorage.getItem("DatosPersona")
         if (!DatosPersona) {
             navigate('/login')
@@ -27,6 +28,23 @@ function MenuTelefono({ MenuConstante }) {
         setNombrePersona(datos.apellidos + " " + datos.nombres)
 
         setTipoUsuario(datos.tipo)
+
+
+        const infoPersona = JSON.parse(DatosPersona)
+        let tipo = infoPersona.tipo
+
+
+        if (tipo === "ADM") {
+
+            navigate('/reportes')
+        } else if (tipo === "CON") {
+            navigate('/reportes')
+        } else {
+            navigate('/')
+        }
+
+
+
 
 
     }, [])

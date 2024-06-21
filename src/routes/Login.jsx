@@ -83,6 +83,7 @@ function Login() {
             let tipo = infoPersona.tipo
 
 
+
             if (tipo === "ADM") {
 
                 navigate('/reportes')
