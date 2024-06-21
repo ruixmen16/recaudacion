@@ -8,14 +8,14 @@ import { renderToString } from 'react-dom/server';
 import { URL_DOMINIO } from "../../constantes"
 import '../estilos/estilos.css'
 import Select from 'react-select'
-
+import * as XLSX from 'xlsx';
 
 
 function Principal() {
     const [selectKey, setSelectKey] = useState(0); // Estado para la clave del Select
 
     const [cargando, setCargando] = useState(false)
-
+    const [totalRecaudado, setTotalRecaudado] = useState('')
     const [mensaje, setMensaje] = useState('')
     const [mostrarMensaje, setMostrarMensaje] = useState(false);
     const valoresInicialesFormData = {
@@ -184,11 +184,14 @@ function Principal() {
         const DatosPersona = localStorage.getItem("DatosPersona")
         const datos = JSON.parse(DatosPersona)
 
+        var fechaActual = new Date();
+        // Formatear la fecha en formato YYYY-MM-DD
+        var fechaFormateada = fechaActual.toISOString().split('T')[0];
 
         // datos.id
         let parametros = {
             id: datos.id,
-            fecha: ""
+            fecha: fechaFormateada
 
         }
         setCargando(true)
@@ -312,6 +315,91 @@ function Principal() {
 
 
     }
+    const ImprimirReporteTurno = () => {
+
+        var fechaActual = new Date();
+        var dia = fechaActual.getDate();
+        var mes = fechaActual.getMonth() + 1; // El mes comienza desde 0, por lo que se suma 1
+        var año = fechaActual.getFullYear();
+        var hora = fechaActual.getHours();
+        var minutos = fechaActual.getMinutes();
+        var segundos = fechaActual.getSeconds();
+        var fechaFormateada = dia + '/' + mes + '/' + año + ' ' + hora + ':' + minutos + ':' + segundos;
+        const DatosPersona = localStorage.getItem("DatosPersona")
+
+        const datos = JSON.parse(DatosPersona)
+        var nombresCompletos = datos.apellidos + " " + datos.nombres
+        var datosReporte = <>
+            <p style={{ textAlign: 'left' }}>REPORTE FIN TURNO</p>
+            <Row style={{ margin: 0, padding: 0 }}>
+                <Col sm={12} >
+                    <span style={{ fontSize: 15 }}>Fecha fin turno: {fechaFormateada}</span>
+                </Col>
+
+                <Col sm={12} >
+                    <span style={{ fontSize: 15 }}>Nombre: {nombresCompletos}</span>
+                </Col>
+
+                <Col sm={12} >
+                    <span style={{ fontSize: 15 }}>Recaudación: ${recaudaciones}</span>
+                </Col>
+
+
+
+
+            </Row>
+
+        </>
+        const contenido =
+            '<html>' +
+            '<head>' +
+            '<style>' +
+            '@page {' +
+            'size: 80mm 100mm;' + // Ancho 80 mm y alto 100 mm
+            'margin: 0mm;' + // Definir los márgenes como 0 en todos los lados
+            '}' +
+            'body {' +
+            'font-family: Arial, sans-serif;' +
+            'margin: 0mm;' + // Asegurar que el body también tenga márgenes 0
+            'padding: 0mm;' + // Ajustar el espacio interno según sea necesario
+            '}' +
+            'h1 {' +
+            'text-align: center;' +
+            '}' +
+            'p {' +
+            'text-align: justify;' +
+            '}' +
+            '.fondo-gris {' +
+            'background-color: gray !important;' +
+            '}' +
+            '</style>' +
+            '</head>' +
+            '<body>' +
+            renderToString(datosReporte) +
+            '</body>' +
+            '</html>';
+
+
+
+        const blob = new Blob([contenido], { type: 'text/html' });
+
+
+
+        const url = URL.createObjectURL(blob);
+        const ventana = window.open(url, '_blank');
+
+        ventana.document.open();
+        ventana.document.write(contenido);
+        ventana.document.close();
+        ventana.onload = function () {
+            ventana.print();
+        };
+
+        ventana.onafterprint = function () {
+            ventana.close();
+        };
+    };
+
     return (<>
 
         <Cargando show={cargando} />
@@ -412,6 +500,9 @@ function Principal() {
 
                     <Col sm={12} className="my-1">
                         <Button style={{ backgroundColor: "black", borderColor: "black", color: 'white' }} className="form-control" type="submit">Registrar</Button>
+                    </Col>
+                    <Col sm={12} className="my-1">
+                        <Button style={{ backgroundColor: "black", borderColor: "black", color: 'white' }} onClick={() => { ImprimirReporteTurno() }} className="form-control" >Imprimir reporte del turno</Button>
                     </Col>
 
                 </Form>

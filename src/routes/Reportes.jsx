@@ -8,7 +8,9 @@ import { renderToString } from 'react-dom/server';
 import { URL_DOMINIO } from "../../constantes"
 import '../estilos/estilos.css'
 import Select from 'react-select'
+import * as XLSX from 'xlsx';
 
+import { saveAs } from 'file-saver'; // Importa file-saver para guardar archivos
 
 
 function Reportes() {
@@ -180,6 +182,52 @@ function Reportes() {
 
 
     }
+    const exportToExcel = () => {
+        const wb = XLSX.utils.book_new();
+        const ws_name = "Reporte";
+        const ws_data = [
+            ["Monto", "Fecha Ingreso", "Apellido", "Nombre", "Tipo Transporte", "Cooperativa", "Disco"],
+            ...reporte.map(item => [
+                item.monto,
+                // item.fechainicio,
+                item.fechafin,
+                item.apellido,
+                item.nombre,
+                item.tipotransporte,
+                item.cooperativa,
+                item.disco
+            ])
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+        const borderStyle = {
+            top: { style: "thin" },
+            bottom: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" }
+        };
+
+        // Aplicar el estilo de borde a todas las celdas dentro del rango
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+                const cell_address = XLSX.utils.encode_cell({ r: R, c: C });
+                if (!ws[cell_address]) continue;
+                if (!ws[cell_address].s) ws[cell_address].s = {};
+                Object.assign(ws[cell_address].s, borderStyle);
+            }
+        }
+
+        // Agregar la hoja al libro de trabajo
+        XLSX.utils.book_append_sheet(wb, ws, ws_name);
+
+        // Guardar el archivo
+        const filename = "reporte.xlsx";
+        XLSX.writeFile(wb, filename);
+
+    };
+
     return (<>
 
         <Cargando show={cargando} />
@@ -285,12 +333,12 @@ function Reportes() {
                         </Form.Label>
                         <Button style={{ backgroundColor: "black", borderColor: "black", color: 'white' }} className="form-control" type="submit">Buscar</Button>
                     </Col>
-                    {/* <Col className="my-1">
+                    <Col className="my-1">
                         <Form.Label>
                             <strong>Exportar</strong>
                         </Form.Label>
-                        <Button style={{ backgroundColor: "black", borderColor: "black", color: 'white' }} className="form-control" >Exportar</Button>
-                    </Col> */}
+                        <Button style={{ backgroundColor: "black", borderColor: "black", color: 'white' }} onClick={() => { exportToExcel() }} className="form-control" >Exportar</Button>
+                    </Col>
 
                 </Form>
             </Col>
@@ -305,9 +353,9 @@ function Reportes() {
                                     <th >TIPO DE RECAUDACION</th>
                                     <th >COOPERATIVA</th>
                                     <th >RECAUDADOR</th>
-                                    <th >F. INICIO</th>
-                                    <th >F. FIN</th>
+                                    <th >F. INGRESO</th>
                                     <th >TOTAL</th>
+                                    <th >DISCO</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -323,6 +371,7 @@ function Reportes() {
                                         let fechainicio = item.fechainicio
                                         let fechafin = item.fechafin
                                         let monto = item.monto
+                                        let disco = item.disco
 
 
 
@@ -332,9 +381,10 @@ function Reportes() {
                                                 <td > {tipotransporte}</td>
                                                 <td > {cooperativa}</td>
                                                 <td > {recaudador}</td>
-                                                <td > {fechainicio}</td>
+                                                {/* <td > {fechainicio}</td> */}
                                                 <td > {fechafin}</td>
                                                 <td > {monto}</td>
+                                                <td > {disco}</td>
                                             </tr>
                                         )
                                     })

@@ -53,12 +53,7 @@ const Layout = ({ children }) => {
                     nombre: 'Union cooperativa',
                     link: 'unioncooperativa',
                     hijo: []
-                },
-                // {
-                //     nombre: 'Reporte fin de turno',
-                //     link: 'finturno',
-                //     hijo: []
-                // },
+                }
 
             )
         }

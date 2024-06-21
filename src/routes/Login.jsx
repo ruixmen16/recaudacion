@@ -78,7 +78,19 @@ function Login() {
     useEffect(() => {
 
         if (localStorage.getItem("DatosPersona")) {
-            navigate('/')
+            const DatosPersona = localStorage.getItem("DatosPersona")
+            const infoPersona = JSON.parse(DatosPersona)
+            let tipo = infoPersona.tipo
+
+
+            if (tipo === "ADM") {
+
+                navigate('/reportes')
+            } else if (tipo === "CON") {
+                navigate('/reportes')
+            } else {
+                navigate('/')
+            }
         }
     }, [])
     return (
