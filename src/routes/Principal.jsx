@@ -12,6 +12,8 @@ import Select from 'react-select'
 
 
 function Principal() {
+    const [selectKey, setSelectKey] = useState(0); // Estado para la clave del Select
+
     const [cargando, setCargando] = useState(false)
 
     const [mensaje, setMensaje] = useState('')
@@ -171,6 +173,11 @@ function Principal() {
             ventana.print();
         };
 
+        ventana.onafterprint = function () {
+            ventana.close();
+        };
+        setValorCooperativas(null);
+        setSelectKey(prevKey => prevKey + 1); // Cambia la clave para reiniciar el Select
     }
     const ObtenerRecaudacionesByIdUsuario = async () => {
 
@@ -220,6 +227,7 @@ function Principal() {
 
 
 
+
         const formData = new FormData(event.target);
 
 
@@ -254,6 +262,7 @@ function Principal() {
             disco: ""
         });
         ObtenerRecaudacionesByIdUsuario()
+
 
 
 
@@ -346,7 +355,7 @@ function Principal() {
                             <Form.Control
                                 type="text"
                                 required
-                                readOnly
+
                                 name="tipotransporte"
                                 placeholder="Tipo de vehiculo.."
                                 value={formData.tipovehiculo}
@@ -361,8 +370,10 @@ function Principal() {
                         </Form.Label>
                         <InputGroup>
                             <Select
+                                key={selectKey} // Cambia la clave del Select
                                 className="form-control"
                                 name="cooperativa"
+                                required
                                 value={valorCooperativas}
                                 options={cooperativas}
                                 placeholder="Selecciona una opción"

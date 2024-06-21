@@ -12,6 +12,8 @@ import { renderToString } from 'react-dom/server';
 
 
 function UnionCooperativa() {
+    const [selectKey, setSelectKey] = useState(0); // Estado para la clave del Select
+
     const [cargando, setCargando] = useState(false)
 
     const [mensaje, setMensaje] = useState('')
@@ -210,10 +212,16 @@ function UnionCooperativa() {
         ventana.onload = function () {
             ventana.print();
         };
+        ventana.onafterprint = function () {
+            ventana.close();
+        };
+        setValorCooperativas(null);
+        setSelectKey(prevKey => prevKey + 1); // Cambia la clave para reiniciar el Select
 
     }
     const GuardarConfigurables = async (event) => {
         event.preventDefault(); // Prevent default form submission
+
 
         const formData = new FormData(event.target);
 
@@ -249,6 +257,7 @@ function UnionCooperativa() {
             disco: ""
         });
         ObtenerRecaudacionesByIdUsuario()
+
         crearDocumentoA4()
     }
 
@@ -335,7 +344,7 @@ function UnionCooperativa() {
                             <Form.Control
                                 type="text"
                                 required
-                                readOnly
+
                                 name="tipotransporte"
                                 placeholder="Tipo de vehiculo.."
                                 value={formData.tipovehiculo}
@@ -350,6 +359,8 @@ function UnionCooperativa() {
                         </Form.Label>
                         <InputGroup>
                             <Select
+                                key={selectKey} // Cambia la clave del Select
+                                required
                                 className="form-control"
                                 name="cooperativa"
                                 value={valorCooperativas}
