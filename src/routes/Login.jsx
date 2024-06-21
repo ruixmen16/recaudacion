@@ -58,7 +58,18 @@ function Login() {
         localStorage.setItem("DatosPersona", json)
 
 
-        navigate('/')
+        let tipo = respu.datos[0].tipo
+
+        if (tipo === "ADM") {
+
+            navigate('/reportes')
+        } else if (tipo === "CON") {
+            navigate('/reportes')
+        } else {
+            navigate('/')
+        }
+
+
         return
 
 

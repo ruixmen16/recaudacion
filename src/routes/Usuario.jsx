@@ -49,7 +49,8 @@ function Usuario() {
     }
     const opciones = [
         { value: 'ADM', label: 'Administrador' },
-        { value: 'RED', label: 'Recaudador' }
+        { value: 'RED', label: 'Recaudador' },
+        { value: 'CON', label: 'Consultor' }
     ];
 
 

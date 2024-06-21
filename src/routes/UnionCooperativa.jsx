@@ -258,7 +258,14 @@ function UnionCooperativa() {
         });
         ObtenerRecaudacionesByIdUsuario()
 
-        crearDocumentoA4()
+        if (response.exito) {
+
+            crearDocumentoA4()
+        } else {
+            setValorCooperativas(null);
+            setSelectKey(prevKey => prevKey + 1); // Cambia la clave para reiniciar el Select
+        }
+
     }
 
 
@@ -330,6 +337,7 @@ function UnionCooperativa() {
                                 readOnly
                                 name="monto"
                                 value={formData.monto}
+                                onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
 
 
                             />
@@ -348,6 +356,7 @@ function UnionCooperativa() {
                                 name="tipotransporte"
                                 placeholder="Tipo de vehiculo.."
                                 value={formData.tipovehiculo}
+                                onChange={(e) => setFormData({ ...formData, tipovehiculo: e.target.value })}
 
                             />
                         </InputGroup>

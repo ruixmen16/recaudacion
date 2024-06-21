@@ -341,6 +341,7 @@ function Principal() {
                                 readOnly
                                 name="monto"
                                 value={formData.monto}
+                                onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
 
 
                             />
@@ -359,6 +360,7 @@ function Principal() {
                                 name="tipotransporte"
                                 placeholder="Tipo de vehiculo.."
                                 value={formData.tipovehiculo}
+                                onChange={(e) => setFormData({ ...formData, tipovehiculo: e.target.value })}
 
                             />
                         </InputGroup>

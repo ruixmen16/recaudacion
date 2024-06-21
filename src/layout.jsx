@@ -1,56 +1,70 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MenuArriba from './components/Menu/MenuArriba';
 import MenuIzquierdo from './components/Menu/MenuIzquierdo';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useMediaQuery } from 'react-responsive';
 
 const Layout = ({ children }) => {
-    const MenuConstante = [
-        {
-            nombre: 'Principal',
-            link: '',
-            hijo: []
-        },
-        {
-            nombre: 'Union cooperativa',
-            link: 'unioncooperativa',
-            hijo: []
-        },
-        // {
-        //     nombre: 'Usuario',
-        //     link: 'usuario',
-        //     hijo: []
-        // },
-        // {
-        //     nombre: 'Tipo de transporte',
-        //     link: '',
-        //     hijo: [
-        //         {
-        //             nombre: 'Agregar',
-        //             link: 'postTransporte'
-        //         },
-        //         {
-        //             nombre: 'Actualizar',
-        //             link: 'putTransporte'
-        //         }
-        //     ]
-        // },
-        // {
-        //     nombre: 'Tipo de cooperativa',
-        //     link: '',
-        //     hijo: [
-        //         {
-        //             nombre: 'Agregar',
-        //             link: 'postCooperativa'
-        //         },
-        //         {
-        //             nombre: 'Actualizar',
-        //             link: 'putCooperativa'
-        //         }
-        //     ]
-        // }
-    ]
-    const [datos, setDatos] = useState(MenuConstante);
+
+    useEffect(() => {
+        let MenuConstante = [
+
+        ]
+
+        const DatosPersona = localStorage.getItem("DatosPersona")
+        const infoPersona = JSON.parse(DatosPersona)
+        let tipoUsuario = infoPersona.tipo
+
+        if (tipoUsuario === "ADM") {
+            MenuConstante.push(
+                {
+                    nombre: 'Creacion de usuario',
+                    link: 'usuario',
+                    hijo: []
+                },
+                {
+                    nombre: 'Reportes',
+                    link: 'reportes',
+                    hijo: []
+                }
+                // {
+                //     nombre: 'Reportes',
+                //     link: '',
+                //     hijo: [
+                //         {
+                //             nombre: 'Agregar',
+                //             link: 'postCooperativa'
+                //         },
+                //         {
+                //             nombre: 'Actualizar',
+                //             link: 'putCooperativa'
+                //         }
+                //     ]
+                // }
+            )
+        } else {
+            MenuConstante.push(
+                {
+                    nombre: 'Principal',
+                    link: '',
+                    hijo: []
+                },
+                {
+                    nombre: 'Union cooperativa',
+                    link: 'unioncooperativa',
+                    hijo: []
+                },
+                // {
+                //     nombre: 'Reporte fin de turno',
+                //     link: 'finturno',
+                //     hijo: []
+                // },
+
+            )
+        }
+        setDatos(MenuConstante)
+    }, [])
+    const [datos, setDatos] = useState();
     const isMobile = useMediaQuery({ maxWidth: 768 });
     const handleInputChange = (event) => {
 
@@ -71,7 +85,7 @@ const Layout = ({ children }) => {
     }
     return (
         <>
-            <MenuArriba MenuConstante={MenuConstante}></MenuArriba>
+            <MenuArriba MenuConstante={datos}></MenuArriba>
             <Container fluid>
                 <Row >
                     {/* Sidebar */}

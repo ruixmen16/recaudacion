@@ -13,7 +13,7 @@ import Layout from './layout.jsx';
 import AgregarCooperativa from './routes/AgregarCooperativa.jsx';
 import ActualizarCooperativa from './routes/ActualizarCooperativa.jsx';
 import UnionCooperativa from './routes/UnionCooperativa.jsx';
-
+import Reportes from './routes/Reportes.jsx';
 
 import {
   createBrowserRouter,
@@ -65,6 +65,11 @@ const router = createBrowserRouter([
   }, {
     path: "/unioncooperativa",
     element: <Layout> <UnionCooperativa /></Layout>,
+    errorElement: <ErrorPage />,
+
+  }, {
+    path: "/reportes",
+    element: <Layout> <Reportes /></Layout>,
     errorElement: <ErrorPage />,
 
   }
