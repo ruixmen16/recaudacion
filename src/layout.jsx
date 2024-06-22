@@ -5,11 +5,11 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useMediaQuery } from 'react-responsive';
 
 const Layout = ({ children }) => {
+    let MenuConstante = [
 
+    ]
     useEffect(() => {
-        let MenuConstante = [
 
-        ]
 
         const DatosPersona = localStorage.getItem("DatosPersona")
         const infoPersona = JSON.parse(DatosPersona)
@@ -17,6 +17,11 @@ const Layout = ({ children }) => {
 
         if (tipoUsuario === "ADM") {
             MenuConstante.push(
+                {
+                    nombre: 'Dashboard',
+                    link: 'dashboard',
+                    hijo: []
+                },
                 {
                     nombre: 'Creacion de usuario',
                     link: 'usuario',
@@ -42,7 +47,14 @@ const Layout = ({ children }) => {
                 //     ]
                 // }
             )
-        } else {
+        } else if (tipoUsuario === "CON") {
+            MenuConstante.push(
+                {
+                    nombre: 'Reportes',
+                    link: 'reportes',
+                    hijo: []
+                })
+        } else if (tipoUsuario === "RED") {
             MenuConstante.push(
                 {
                     nombre: 'Principal',
@@ -59,28 +71,13 @@ const Layout = ({ children }) => {
         }
         setDatos(MenuConstante)
     }, [])
-    const [datos, setDatos] = useState();
+    const [datos, setDatos] = useState(MenuConstante);
     const isMobile = useMediaQuery({ maxWidth: 768 });
-    const handleInputChange = (event) => {
 
 
-        let letra = quitartildes(event.target.value)
-
-        setDatos(MenuConstante.filter((persona) =>
-            quitartildes(persona.nombre).includes(letra) ||
-            (persona.hijo && persona.hijo.some((hijo) => quitartildes(hijo.nombre).includes(letra)))
-        ))
-    };
-
-    function quitartildes(letra) {
-
-        letra = letra.toLowerCase()
-
-        return letra.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
     return (
         <>
-            <MenuArriba MenuConstante={datos}></MenuArriba>
+            <MenuArriba busqueda={datos}></MenuArriba>
             <Container fluid>
                 <Row >
                     {/* Sidebar */}

@@ -14,6 +14,7 @@ import AgregarCooperativa from './routes/AgregarCooperativa.jsx';
 import ActualizarCooperativa from './routes/ActualizarCooperativa.jsx';
 import UnionCooperativa from './routes/UnionCooperativa.jsx';
 import Reportes from './routes/Reportes.jsx';
+import Gerente from './routes/Gerente.jsx';
 
 import {
   createBrowserRouter,
@@ -70,6 +71,11 @@ const router = createBrowserRouter([
   }, {
     path: "/reportes",
     element: <Layout> <Reportes /></Layout>,
+    errorElement: <ErrorPage />,
+
+  }, {
+    path: "/dashboard",
+    element: <Layout> <Gerente /></Layout>,
     errorElement: <ErrorPage />,
 
   }

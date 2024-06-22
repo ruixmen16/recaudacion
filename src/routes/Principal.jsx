@@ -484,7 +484,7 @@ function Principal() {
                             <Form.Control
                                 type="text"
 
-
+                                required
                                 name="disco"
                                 placeholder="Disco.."
                                 value={formData.disco}

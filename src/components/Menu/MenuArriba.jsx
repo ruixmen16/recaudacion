@@ -6,7 +6,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import { useMediaQuery } from 'react-responsive';
 import { NavDropdown, Navbar } from 'react-bootstrap';
 
-function MenuTelefono({ MenuConstante }) {
+function MenuTelefono({ busqueda }) {
     const isMobile = useMediaQuery({ maxWidth: 768 });
     const navigate = useNavigate()
     const [tipoUsuario, setTipoUsuario] = useState('')
@@ -78,7 +78,7 @@ function MenuTelefono({ MenuConstante }) {
                     <Offcanvas.Body >
                         <Nav className="justify-content-end flex-grow-1 pe-3" >
                             {
-                                isMobile && MenuConstante.filter(x => x.hijo.length != 0).map((papa, index) => {
+                                (isMobile && busqueda.length > 0) && busqueda.filter(x => x.hijo.length != 0).map((papa, index) => {
 
                                     return (
                                         <NavDropdown key={index} title={papa.nombre} >
@@ -97,7 +97,7 @@ function MenuTelefono({ MenuConstante }) {
                                 )
                             }
                             {
-                                isMobile && MenuConstante.filter(x => x.hijo.length == 0).map((papa, index) => {
+                                (isMobile && busqueda.length > 0) && busqueda.filter(x => x.hijo.length == 0).map((papa, index) => {
                                     return (
                                         <Nav.Link key={index} as={NavLink} to={"/" + papa.link}>{papa.nombre}</Nav.Link>
                                     )
