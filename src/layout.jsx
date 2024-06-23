@@ -5,9 +5,11 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useMediaQuery } from 'react-responsive';
 
 const Layout = ({ children }) => {
-    let MenuConstante = [
+    const [datos, setDatos] = useState();
+    const isMobile = useMediaQuery({ maxWidth: 768 });
 
-    ]
+
+
     useEffect(() => {
 
 
@@ -15,8 +17,9 @@ const Layout = ({ children }) => {
         const infoPersona = JSON.parse(DatosPersona)
         let tipoUsuario = infoPersona.tipo
 
+        let menuConstante = [];
         if (tipoUsuario === "ADM") {
-            MenuConstante.push(
+            menuConstante.push(
                 {
                     nombre: 'Dashboard',
                     link: 'dashboard',
@@ -32,30 +35,16 @@ const Layout = ({ children }) => {
                     link: 'reportes',
                     hijo: []
                 }
-                // {
-                //     nombre: 'Reportes',
-                //     link: '',
-                //     hijo: [
-                //         {
-                //             nombre: 'Agregar',
-                //             link: 'postCooperativa'
-                //         },
-                //         {
-                //             nombre: 'Actualizar',
-                //             link: 'putCooperativa'
-                //         }
-                //     ]
-                // }
             )
         } else if (tipoUsuario === "CON") {
-            MenuConstante.push(
+            menuConstante.push(
                 {
                     nombre: 'Reportes',
                     link: 'reportes',
                     hijo: []
                 })
         } else if (tipoUsuario === "RED") {
-            MenuConstante.push(
+            menuConstante.push(
                 {
                     nombre: 'Principal',
                     link: '',
@@ -69,11 +58,8 @@ const Layout = ({ children }) => {
 
             )
         }
-        setDatos(MenuConstante)
+        setDatos(menuConstante)
     }, [])
-    const [datos, setDatos] = useState(MenuConstante);
-    const isMobile = useMediaQuery({ maxWidth: 768 });
-
 
     return (
         <>

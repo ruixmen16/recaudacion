@@ -52,67 +52,69 @@ function MenuTelefono({ busqueda }) {
 
     return (<>
 
-
-        <Navbar style={{ backgroundColor: '#1A1B1C', height: '60px' }} expand='lg' data-bs-theme="dark"   >
-            <Container fluid>{ /*fluid*/}
-                <Navbar.Brand href="/" style={{ fontSize: 14 }}>
-                    {/* <img
+        {busqueda &&
+            <Navbar style={{ backgroundColor: '#1A1B1C', height: '60px' }} expand='lg' data-bs-theme="dark"   >
+                <Container fluid>{ /*fluid*/}
+                    <Navbar.Brand href="/" style={{ fontSize: 14 }}>
+                        {/* <img
             alt="imagen logo sistema"
             src={logo}
             width="30"
             height="30"
             className="d-inline-block align-top"
           /> */}
-                    {nombrePersona}
-                </Navbar.Brand>
-                <Navbar.Toggle aria-controls='offcanvasNavbar-expand-false' />
-                <Navbar.Offcanvas style={{ width: '70vw' }} id='offcanvasNavbar-expand-false'
-                    aria-labelledby='offcanvasNavbarLabel-expand-false'
-                    placement='end'
-                >
-                    <Offcanvas.Header closeButton>
-                        <Offcanvas.Title id='offcanvasNavbarLabel-expand-false'>
-                            Menú
-                        </Offcanvas.Title>
-                    </Offcanvas.Header>
-                    <Offcanvas.Body >
-                        <Nav className="justify-content-end flex-grow-1 pe-3" >
-                            {
-                                (isMobile && busqueda.length > 0) && busqueda.filter(x => x.hijo.length != 0).map((papa, index) => {
+                        {nombrePersona}
+                    </Navbar.Brand>
+                    <Navbar.Toggle aria-controls='offcanvasNavbar-expand-false' />
+                    <Navbar.Offcanvas style={{ width: '70vw' }} id='offcanvasNavbar-expand-false'
+                        aria-labelledby='offcanvasNavbarLabel-expand-false'
+                        placement='end'
+                    >
+                        <Offcanvas.Header closeButton>
+                            <Offcanvas.Title id='offcanvasNavbarLabel-expand-false'>
+                                Menú
+                            </Offcanvas.Title>
+                        </Offcanvas.Header>
+                        <Offcanvas.Body >
+                            <Nav className="justify-content-end flex-grow-1 pe-3" >
+                                {
+                                    (isMobile && busqueda.length > 0) && busqueda.filter(x => x.hijo.length != 0).map((papa, index) => {
 
-                                    return (
-                                        <NavDropdown key={index} title={papa.nombre} >
-                                            {
-                                                papa.hijo.map((hijo, recorrido) => {
-                                                    return (
-                                                        <NavDropdown.Item key={recorrido} as={NavLink} to={"/" + hijo.link}>
-                                                            {hijo.nombre}
-                                                        </NavDropdown.Item>
-                                                    )
-                                                })
-                                            }
-                                        </NavDropdown>
+                                        return (
+                                            <NavDropdown key={index} title={papa.nombre} >
+                                                {
+                                                    papa.hijo.map((hijo, recorrido) => {
+                                                        return (
+                                                            <NavDropdown.Item key={recorrido} as={NavLink} to={"/" + hijo.link}>
+                                                                {hijo.nombre}
+                                                            </NavDropdown.Item>
+                                                        )
+                                                    })
+                                                }
+                                            </NavDropdown>
+                                        )
+                                    }
                                     )
                                 }
-                                )
-                            }
-                            {
-                                (isMobile && busqueda.length > 0) && busqueda.filter(x => x.hijo.length == 0).map((papa, index) => {
-                                    return (
-                                        <Nav.Link key={index} as={NavLink} to={"/" + papa.link}>{papa.nombre}</Nav.Link>
+                                {
+                                    (isMobile && busqueda.length > 0) && busqueda.filter(x => x.hijo.length == 0).map((papa, index) => {
+                                        return (
+                                            <Nav.Link key={index} as={NavLink} to={"/" + papa.link}>{papa.nombre}</Nav.Link>
+                                        )
+                                    }
                                     )
                                 }
-                                )
-                            }
 
-                            <Nav.Link to="/" onClick={() => cerrarSesion()} >Cerrar Sesión</Nav.Link>
+                                <Nav.Link to="/" onClick={() => cerrarSesion()} >Cerrar Sesión</Nav.Link>
 
-                        </Nav>
+                            </Nav>
 
-                    </Offcanvas.Body>
-                </Navbar.Offcanvas>
-            </Container>
-        </Navbar >
+                        </Offcanvas.Body>
+                    </Navbar.Offcanvas>
+                </Container>
+            </Navbar >
+        }
+
 
 
 
