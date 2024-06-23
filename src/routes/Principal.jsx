@@ -18,6 +18,8 @@ function Principal() {
     const [totalRecaudado, setTotalRecaudado] = useState('')
     const [mensaje, setMensaje] = useState('')
     const [mostrarMensaje, setMostrarMensaje] = useState(false);
+    const [groupedBySeparacion, setGroupedBySeparacion] = useState([]);
+    const [groupedByTransportType, setGroupedByTransportType] = useState([]);
     const valoresInicialesFormData = {
         monto: 0.00,
         tipovehiculo: "",
@@ -41,6 +43,8 @@ function Principal() {
         ObtenerTransportes()
 
         ObtenerRecaudacionesByIdUsuario()
+
+
     }, [])
 
     const handleSelectCooperativa = (evento) => {
@@ -179,6 +183,34 @@ function Principal() {
         setValorCooperativas(null);
         setSelectKey(prevKey => prevKey + 1); // Cambia la clave para reiniciar el Select
     }
+    const groupByTransportType = (data) => {
+        return data.reduce((acc, item) => {
+            const { tipotransporte, monto } = item;
+            if (!acc[tipotransporte]) {
+                acc[tipotransporte] = { tipotransporte, monto: 0 };
+            }
+            acc[tipotransporte].monto += monto;
+            return acc;
+        }, {});
+    };
+    const groupBySeparacion = (data) => {
+        return data.reduce((acc, item) => {
+            const { cooperativa, monto, tipotransporte } = item;
+
+            if (tipotransporte === "Unión de cooperativa") {
+                if (!acc["Unión de cooperativa"]) {
+                    acc["Unión de cooperativa"] = { cooperativa: "Unión de cooperativa", monto: 0 };
+                }
+                acc["Unión de cooperativa"].monto += monto;
+            } else {
+                if (!acc["Otros"]) {
+                    acc["Otros"] = { cooperativa: "Otros", monto: 0 };
+                }
+                acc["Otros"].monto += monto;
+            }
+            return acc;
+        }, {});
+    };
     const ObtenerRecaudacionesByIdUsuario = async () => {
 
         const DatosPersona = localStorage.getItem("DatosPersona")
@@ -188,25 +220,40 @@ function Principal() {
         // Formatear la fecha en formato YYYY-MM-DD
         var fechaFormateada = fechaActual.toISOString().split('T')[0];
 
-        // datos.id
-        let parametros = {
-            id: datos.id,
-            fecha: fechaFormateada,
-            tipotransporte: "normal"
 
+        //////////////////////////////////
+
+
+        let params = {
+            desde: fechaFormateada,
+            hasta: fechaFormateada,
+            recaudador: datos.id,
+            tipotransporte: "todos",
+            cooperativa: "todos",
+            tiporecaudacion: "todos"
         }
-        setCargando(true)
-        const resp = await Get('API/getRecaudacionesByIdUsuario.php', parametros)
-        setCargando(false)
+        setCargando(true);
+        const response = await Get('API/getReporte.php', params);
+        setCargando(false);
 
-        if (!resp.exito) {
-            setMensaje(resp.mensaje)
-            setMostrarMensaje(true)
-            return
+        if (!response.exito) {
+            setMensaje(response.mensaje); // Establecer el mensaje de respuesta
+            setMostrarMensaje(true);
         }
 
 
-        setRecaudaciones(resp.datos)
+        let array = response.datos
+        const transportTypeData = Object.values(groupByTransportType(array));
+        const separacionData = Object.values(groupBySeparacion(array));
+        setGroupedByTransportType(transportTypeData);
+        setGroupedBySeparacion(separacionData);
+        //////////////////////////////////
+
+        let redaudado = 0.00;
+        response.datos.forEach((item) => {
+            redaudado += item.monto;
+        });
+        setRecaudaciones(redaudado)
 
 
     }
@@ -230,12 +277,7 @@ function Principal() {
         event.preventDefault(); // Prevent default form submission
 
 
-
-
         const formData = new FormData(event.target);
-
-
-
 
 
         const DatosPersona = localStorage.getItem("DatosPersona")
@@ -343,10 +385,25 @@ function Principal() {
                 <Col sm={12} >
                     <span style={{ fontSize: 15 }}>Nombre: {nombresCompletos}</span>
                 </Col>
+                <p style={{ textAlign: 'left' }}>DETALLES</p>
+                <Table striped bordered hover>
 
-                <Col sm={12} >
-                    <span style={{ fontSize: 15 }}>Recaudación: ${recaudaciones}</span>
-                </Col>
+                    <tbody>
+                        {groupedByTransportType.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.tipotransporte}</td>
+                                <td style={{ textAlign: "right" }}>${item.monto}</td>
+
+                            </tr>
+                        ))}
+                        <tr >
+                            <td>TOTAL</td>
+                            <td style={{ textAlign: "right" }}>${recaudaciones}</td>
+
+                        </tr>
+                    </tbody>
+                </Table>
+
 
 
 
@@ -410,7 +467,7 @@ function Principal() {
         <Mensaje tipo="informacion" mensaje={mensaje} show={mostrarMensaje} setShow={setMostrarMensaje} />
 
         <h5><strong>Registro de garita - Terminal Terrestre de Portoviejo</strong></h5>
-        <h6>Total recaudado: {recaudaciones}</h6>
+        <h6>Total recaudado: ${recaudaciones}</h6>
 
         <Row>
 
@@ -510,6 +567,39 @@ function Principal() {
                     </Col>
 
                 </Form>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Monto Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {groupedBySeparacion.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.cooperativa}</td>
+                                <td style={{ textAlign: "right" }}>${item.monto}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Tipo de Transporte</th>
+                            <th>Monto Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {groupedByTransportType.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.tipotransporte}</td>
+                                <td style={{ textAlign: "right" }}>${item.monto}</td>
+
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
             </Col>
             <Col sm={6}>
                 {
