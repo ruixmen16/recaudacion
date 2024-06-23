@@ -35,8 +35,12 @@ function Dashboard() {
     const [recaudacionPorTipo, setRecaudacionPorTipo] = useState([]);
     const [recaudacionPorCooperativa, setRecaudacionPorCooperativa] = useState([]);
     const [recaudacionPorUsuario, setRecaudacionPorUsuario] = useState([]);
-    const [fechaDesde, setFechaDesde] = useState('2023-01-20');
-    const [fechaHasta, setFechaHasta] = useState('2024-12-24');
+    const today = new Date(); // Obtén la fecha actual como un objeto Date
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1); // Primer día del mes actual
+
+
+    const [fechaDesde, setFechaDesde] = useState(firstDayOfMonth.toISOString().split('T')[0]);
+    const [fechaHasta, setFechaHasta] = useState(today.toISOString().split('T')[0]);
 
     useEffect(() => {
         async function fetchData() {
@@ -105,9 +109,38 @@ function Dashboard() {
                 align: 'start',  // Alineación de la etiqueta
                 offset: -35,  // Desplazamiento de la etiqueta
             }
-        }
+        },
+
     };
 
+    const optionsFlujo = {
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        const label = context.dataset.label || '';
+                        const value = context.raw;
+                        return `${label}:  ${value} vehiculos`;
+                    }
+                }
+            },
+            datalabels: {
+                formatter: (value, context) => {
+                    const total = context.dataset.data.reduce((acc, curr) => acc + parseFloat(curr), 0); // Asegurarse de que curr sea un número
+                    const percentage = ((value / total) * 100).toFixed(2);
+                    //return `$ ${value} /n(${percentage}%)`;
+                    return `#${value}\n(${percentage}%)`; // \n para nueva línea
+
+
+                },
+                color: '#fffff',
+                anchor: 'end',  // Posición de la etiqueta respecto al punto
+                align: 'start',  // Alineación de la etiqueta
+                offset: -35,  // Desplazamiento de la etiqueta
+            }
+        },
+
+    };
     const pieOptions = {
         plugins: {
             tooltip: {
@@ -165,12 +198,12 @@ function Dashboard() {
 
             <Row>
                 <Col>
-                    <h2>Recaudación Total: {recaudacionTotal}</h2>
+                    <h2>Recaudación Total: ${recaudacionTotal}</h2>
                 </Col>
             </Row>
 
             <Row>
-                <Col sm={6}>
+                <Col md={6}>
                     <h2>Recaudación por Tipo de Transporte</h2>
                     <Bar
                         data={{
@@ -187,7 +220,7 @@ function Dashboard() {
                         options={options}
                     />
                 </Col>
-                <Col sm={6}>
+                <Col md={6}>
                     <h2>Recaudación por Usuario</h2>
                     <Bar
                         data={{
@@ -203,14 +236,14 @@ function Dashboard() {
                         options={options} />
                 </Col>
 
-                <Col sm={12} >
+                <Col md={12} >
                     <h2>Recaudación por hora</h2>
                     <Bar data={dataRecaudacionbyHora} options={options} />
                 </Col>
 
-                <Col sm={12}>
+                <Col md={12}>
                     <h2>Flujo vehicular por hora</h2>
-                    <Bar data={dataFlujoVehicularbyHora} options={options} />
+                    <Bar data={dataFlujoVehicularbyHora} options={optionsFlujo} />
                 </Col>
 
                 <Col sm={12}>
