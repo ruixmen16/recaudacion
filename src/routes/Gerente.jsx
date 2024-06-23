@@ -3,9 +3,9 @@ import Dashboard from '../components/Dashboard';
 
 function Gerente() {
     return (
-        <div>
-            <Dashboard />
-        </div>
+
+        <Dashboard />
+
     );
 }
 

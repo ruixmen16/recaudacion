@@ -13,6 +13,7 @@
     "axios": "^1.4.0",
     "bootstrap": "^5.3.1",
     "chart.js": "^4.4.3",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "file-saver": "^2.0.5",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
