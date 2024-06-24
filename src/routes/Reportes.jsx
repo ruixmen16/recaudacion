@@ -16,7 +16,16 @@ function Reportes() {
     const [cooperativas, setCooperativas] = useState([]);
     const [recaudadores, setRecaudadores] = useState([]);
     const [reporte, setReporte] = useState([]);
-    const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato YYYY-MM-DD
+    const fechaactual = new Date(); // Obtiene la fecha actual en formato YYYY-MM-DD
+
+
+    var dia = fechaactual.getDate();
+    var mes = fechaactual.getMonth() + 1; // El mes comienza desde 0, por lo que se suma 1
+
+    mes = mes < 10 ? ('0' + mes) : mes
+    var año = fechaactual.getFullYear();
+    var today = año + '-' + mes + '-' + dia;
+
     const [groupedByTransportType, setGroupedByTransportType] = useState([]);
     const [groupedByCooperative, setGroupedByCooperative] = useState([]);
     const [groupedBySeparacion, setGroupedBySeparacion] = useState([]);

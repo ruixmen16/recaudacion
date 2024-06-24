@@ -38,9 +38,17 @@ function Dashboard() {
     const today = new Date(); // Obtén la fecha actual como un objeto Date
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1); // Primer día del mes actual
 
+    var dia = today.getDate();
+    var mes = today.getMonth() + 1; // El mes comienza desde 0, por lo que se suma 1
+
+    mes = mes < 10 ? ('0' + mes) : mes
+    var año = today.getFullYear();
+    var fechaFormateada = año + '-' + mes + '-' + dia;
+
+
 
     const [fechaDesde, setFechaDesde] = useState(firstDayOfMonth.toISOString().split('T')[0]);
-    const [fechaHasta, setFechaHasta] = useState(today.toISOString().split('T')[0]);
+    const [fechaHasta, setFechaHasta] = useState(fechaFormateada);
 
     useEffect(() => {
         async function fetchData() {

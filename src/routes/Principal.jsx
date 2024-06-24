@@ -218,7 +218,11 @@ function Principal() {
 
         var fechaActual = new Date();
         // Formatear la fecha en formato YYYY-MM-DD
-        var fechaFormateada = fechaActual.toISOString().split('T')[0];
+        var dia = fechaActual.getDate();
+        var mes = fechaActual.getMonth() + 1; // El mes comienza desde 0, por lo que se suma 1
+        var año = fechaActual.getFullYear();
+        var fechaFormateada = año + '-' + mes + '-' + dia;
+
 
 
         //////////////////////////////////
