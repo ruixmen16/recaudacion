@@ -8,6 +8,12 @@ import Select from 'react-select';
 import * as XLSX from 'xlsx';
 import { renderToString } from 'react-dom/server';
 function Reportes() {
+
+
+
+
+
+
     const [cargando, setCargando] = useState(false);
     const [totalRecaudado, setTotalRecaudado] = useState(0);
     const [mensaje, setMensaje] = useState('');
@@ -26,7 +32,21 @@ function Reportes() {
     mes = mes < 10 ? ('0' + mes) : mes
     var año = fechaactual.getFullYear();
     var today = año + '-' + mes + '-' + dia;
-    const [fechaEscogida, setFechaEscogida] = useState(today);
+
+
+
+
+    const valoresFormData = {
+        desde: today,
+        hasta: today,
+        recaudador: "",
+        tipoTransporte: "",
+        cooperativa: "",
+        tipoRecaudacion: "",
+
+    };
+    const [formData, setFormData] = useState(valoresFormData);
+
 
     const [groupedByTransportType, setGroupedByTransportType] = useState([]);
     const [groupedByCooperative, setGroupedByCooperative] = useState([]);
@@ -94,9 +114,9 @@ function Reportes() {
     const ObtenerReporte = async (event) => {
         event.preventDefault(); // Prevent default form submission
 
-        const formData = new FormData(event.target);
+        const formulario = new FormData(event.target);
         const params = {};
-        formData.forEach((value, key) => {
+        formulario.forEach((value, key) => {
             params[key] = value;
         });
         setCargando(true);
@@ -163,6 +183,8 @@ function Reportes() {
     };
 
     const handleImagenTipoTransporte = async (event) => {
+        setFormData({ ...formData, tipoTransporte: event })
+
         let id = event.value;
         let parametros = { id };
         setCargando(true);
@@ -313,7 +335,7 @@ function Reportes() {
                     </tr>
                     <tr >
                         <td colSpan={2} style={{ textAlign: "right" }}>FECHA DE RECAUDACION</td>
-                        <td style={{ textAlign: "right" }}>{fechaEscogida}</td>
+                        <td style={{ textAlign: "right" }}>{formData.hasta}</td>
 
                     </tr>
                     <tr >
@@ -354,8 +376,9 @@ function Reportes() {
                                     <Form.Control
                                         type="date"
                                         required
-                                        defaultValue={today}
+                                        value={formData.desde}
                                         name="desde"
+                                        onChange={(e) => setFormData({ ...formData, desde: e.target.value })}
                                     />
                                 </InputGroup>
                             </Col>
@@ -364,11 +387,11 @@ function Reportes() {
                                 <InputGroup>
                                     <Form.Control
                                         type="date"
-                                        defaultValue={today}
+
                                         required
                                         name="hasta"
-                                        value={fechaEscogida}
-                                        onChange={(e) => { setFechaEscogida(e.target.value) }}
+                                        value={formData.hasta}
+                                        onChange={(e) => setFormData({ ...formData, hasta: e.target.value })}
                                     />
                                 </InputGroup>
                             </Col>
@@ -381,6 +404,8 @@ function Reportes() {
                                         required
                                         options={recaudadores}
                                         placeholder="Selecciona el recaudador"
+                                        value={formData.recaudador}
+                                        onChange={(e) => setFormData({ ...formData, recaudador: e })}
                                     />
                                 </InputGroup>
                             </Col>
@@ -394,6 +419,8 @@ function Reportes() {
                                         options={tipoTransportes}
                                         placeholder="Selecciona un tipo de transporte"
                                         onChange={(e) => { handleImagenTipoTransporte(e) }}
+                                        value={formData.tipoTransporte}
+
                                     />
                                 </InputGroup>
                             </Col>
@@ -406,6 +433,8 @@ function Reportes() {
                                         required
                                         options={cooperativas}
                                         placeholder="Selecciona una cooperativa"
+                                        value={formData.cooperativa}
+                                        onChange={(e) => setFormData({ ...formData, cooperativa: e })}
                                     />
                                 </InputGroup>
                             </Col>
@@ -418,6 +447,8 @@ function Reportes() {
                                         required
                                         options={[{ value: "todos", label: "Todas" }, { value: "normal", label: "Normal" }, { value: "union", label: "Unión" }]}
                                         placeholder="Selecciona tipo de reaudacion"
+                                        value={formData.tipoRecaudacion}
+                                        onChange={(e) => setFormData({ ...formData, tipoRecaudacion: e })}
                                     />
                                 </InputGroup>
                             </Col>
