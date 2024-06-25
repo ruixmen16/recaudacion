@@ -6,7 +6,7 @@ import Get from "../services/Get";
 import '../estilos/estilos.css';
 import Select from 'react-select';
 import * as XLSX from 'xlsx';
-
+import { renderToString } from 'react-dom/server';
 function Reportes() {
     const [cargando, setCargando] = useState(false);
     const [totalRecaudado, setTotalRecaudado] = useState(0);
@@ -16,6 +16,7 @@ function Reportes() {
     const [cooperativas, setCooperativas] = useState([]);
     const [recaudadores, setRecaudadores] = useState([]);
     const [reporte, setReporte] = useState([]);
+
     const fechaactual = new Date(); // Obtiene la fecha actual en formato YYYY-MM-DD
 
 
@@ -25,10 +26,13 @@ function Reportes() {
     mes = mes < 10 ? ('0' + mes) : mes
     var año = fechaactual.getFullYear();
     var today = año + '-' + mes + '-' + dia;
+    const [fechaEscogida, setFechaEscogida] = useState(today);
 
     const [groupedByTransportType, setGroupedByTransportType] = useState([]);
     const [groupedByCooperative, setGroupedByCooperative] = useState([]);
     const [groupedBySeparacion, setGroupedBySeparacion] = useState([]);
+
+    const [groupedByCedula, setGroupedByCedula] = useState([]);
     useEffect(() => {
         getAllTiposTransporte();
         getAllRecaudadores();
@@ -42,6 +46,19 @@ function Reportes() {
                 acc[tipotransporte] = { tipotransporte, monto: 0 };
             }
             acc[tipotransporte].monto += monto;
+            return acc;
+        }, {});
+    };
+
+    const groupByCedula = (data) => {
+        return data.reduce((acc, item) => {
+            const { cedula, cooperativa, monto, tipotransporte, apellido, nombre } = item;
+            if (!acc[cedula]) {
+                acc[cedula] = { apellido, nombre, monto: 0 };
+            }
+            if (tipotransporte === "Unión de cooperativa") {
+                acc[cedula].monto += monto;
+            }
             return acc;
         }, {});
     };
@@ -95,9 +112,12 @@ function Reportes() {
         const transportTypeData = Object.values(groupByTransportType(array));
         const cooperativeData = Object.values(groupByCooperative(array));
         const separacionData = Object.values(groupBySeparacion(array));
+        const cedulaData = Object.values(groupByCedula(array));
+
         setGroupedByTransportType(transportTypeData);
         setGroupedByCooperative(cooperativeData);
         setGroupedBySeparacion(separacionData);
+        setGroupedByCedula(cedulaData);
         let redaudado = 0.00;
         response.datos.forEach((item) => {
             redaudado += item.monto;
@@ -203,6 +223,119 @@ function Reportes() {
         XLSX.writeFile(wb, filename);
     };
 
+    const crearDocumentoA4 = async () => {
+
+
+        const contenido =
+            '<html>' +
+            '<head>' +
+            '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">' + // Incluir el archivo CSS de Bootstrap aquí
+            '<style>' +
+            '@page {' +
+            'size: A4;' +
+            'margin: 0mm;' +
+            '}' +
+            'body {' +
+            'font-family: Arial, sans-serif;' +
+            'margin: 0;' +
+            'padding: 20mm;' +
+            '}' +
+            'h1 {' +
+            'text-align: center;' +
+            '}' +
+            'p {' +
+            'text-align: justify;' +
+            '}' +
+            '.fondo-gris {' +
+            'background-color: gray !important;' +
+            '}' +
+            '</style>' +
+            '</head>' +
+            '<body>' +
+            renderToString(<TablaDevolucionCooperativa datos={groupedByCedula}></TablaDevolucionCooperativa>) +
+            '</body>' +
+            '</html>'
+
+        const blob = new Blob([contenido], { type: 'text/html' });
+
+
+
+        const url = URL.createObjectURL(blob);
+        const ventana = window.open(url, '_blank');
+        ventana.document.open();
+        ventana.document.write(contenido);
+        ventana.document.close();
+        ventana.onload = function () {
+            ventana.print();
+        };
+
+    }
+    const TablaDevolucionCooperativa = ({ datos }) => {
+
+        const totalMonto = datos.reduce((total, item) => {
+            return total + item.monto;
+        }, 0);
+        const descuento = totalMonto * 0.1
+        return <>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>APELLIDOS</th>
+                        <th>NOMBRES</th>
+                        <th style={{ textAlign: "right" }}>MONTO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        datos.map((item, index) => {
+
+                            return (
+                                <tr key={index}>
+                                    <td>{item.apellido}</td>
+                                    <td>{item.nombre}</td>
+                                    <td style={{ textAlign: "right" }}>${item.monto}</td>
+
+                                </tr>
+                            );
+                        })
+
+                    }
+
+                    <tr>
+                        <th colSpan={3}>UNION DE COOPERATIVAS DE PASAJEROS DE MANABI</th>
+
+
+                    </tr>
+                    <tr >
+                        <td colSpan={2} style={{ textAlign: "right" }}>FECHA DE ACTUAL</td>
+                        <td style={{ textAlign: "right" }}>{today}</td>
+
+                    </tr>
+                    <tr >
+                        <td colSpan={2} style={{ textAlign: "right" }}>FECHA DE RECAUDACION</td>
+                        <td style={{ textAlign: "right" }}>{fechaEscogida}</td>
+
+                    </tr>
+                    <tr >
+                        <td colSpan={2} style={{ textAlign: "right" }}>VALOR RECIBIDO</td>
+                        <td style={{ textAlign: "right" }}>${totalMonto}</td>
+
+                    </tr>
+                    <tr >
+                        <td colSpan={2} style={{ textAlign: "right" }}>DESCUENTO</td>
+                        <td style={{ textAlign: "right" }}>${descuento}</td>
+
+                    </tr>
+                    <tr >
+                        <td colSpan={2} style={{ textAlign: "right" }}>TOTAL A ENTREGAR</td>
+                        <td style={{ textAlign: "right" }}>${totalMonto - descuento}</td>
+
+                    </tr>
+                </tbody>
+            </Table>
+
+        </>
+    }
     return (
         <>
             <Cargando show={cargando} />
@@ -234,6 +367,8 @@ function Reportes() {
                                         defaultValue={today}
                                         required
                                         name="hasta"
+                                        value={fechaEscogida}
+                                        onChange={(e) => { setFechaEscogida(e.target.value) }}
                                     />
                                 </InputGroup>
                             </Col>
@@ -377,7 +512,7 @@ function Reportes() {
                             </Accordion.Item>
                             <Accordion.Item eventKey="3">
                                 <Accordion.Header>Reporte general</Accordion.Header>
-                                <Accordion.Body eventKey="1" style={{ maxHeight: 350, overflowY: "auto" }}>
+                                <Accordion.Body style={{ maxHeight: 350, overflowY: "auto" }}>
                                     <Table striped bordered hover>
                                         <thead>
                                             <tr>
@@ -408,6 +543,13 @@ function Reportes() {
                                         </tbody>
                                     </Table>
 
+                                </Accordion.Body>
+                            </Accordion.Item>
+                            <Accordion.Item eventKey="4">
+                                <Accordion.Header>Devolución de unión cooperativa</Accordion.Header>
+                                <Accordion.Body style={{ maxHeight: 450, overflowY: "auto" }}>
+                                    <TablaDevolucionCooperativa datos={groupedByCedula} />
+                                    <Button className="btn btn-dark" onClick={() => { crearDocumentoA4() }}>Imprimir</Button>
                                 </Accordion.Body>
                             </Accordion.Item>
                         </Accordion>
